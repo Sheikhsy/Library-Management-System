@@ -105,9 +105,32 @@ JOIN book b ON b.book_id=ba.book_id
 
 group by a.author_id order by Number_of_books DESC;
 
+-- 4. Members that borowwed more than average (Active Member) 
+WITH mem_total AS (
+  SELECT member_id, COUNT(borrowing_id) AS Borrowed
+  FROM borrowing
+  GROUP BY member_id
+),
+borrow_stats AS (
+  SELECT 
+    COUNT(borrowing_id) AS Total_Borrow,
+    COUNT(DISTINCT member_id) AS Total_Borrower
+  FROM borrowing
+),
+avg_stats AS (
+  SELECT 
+    Total_Borrow, 
+    Total_Borrower,
+    FLOOR(Total_Borrow / Total_Borrower) AS Average_Borrow
+  FROM borrow_stats
+)
+SELECT m.member_id
+FROM mem_total m
+JOIN avg_stats a
+  ON m.Borrowed > a.Average_Borrow;
 
 
-# 4.Reduce the avaialabilty by 2 for book_id =1 if it's negative Roll Back
+# 5.Reduce the avaialabilty by 2 for book_id =1 if it's negative Roll Back
 
 -- Start a transaction
 START TRANSACTION;
@@ -124,3 +147,4 @@ SELECT available_copies FROM Book WHERE book_id = 1;
 -- If available_copies >= 0, commit the transaction
 -- Else, rollback
 ROLLBACK;
+

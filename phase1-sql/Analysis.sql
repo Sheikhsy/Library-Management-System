@@ -1,31 +1,3 @@
-Select * from `Library`;
-
-
--- BOOK ANALYSIS
-
--- 1.Common Books that are found in all libraries and total copies of them available
-
-SELECT b.title, SUM(b.available_copies) AS Total_Copies_Available
-FROM book b
-GROUP BY b.title
-HAVING COUNT(DISTINCT b.library_id) = 3;
-
--- 2.Books that got borrowed most in order (Hot Items)
-
-with cte as (
-select b.title as Title, sum(b.total_copies) as Total, sum(b.available_copies) as Available
-from book b group by b.title)
-select Title, Total - Available as Borrowed_Times, Available 
-from cte order by Borrowed_Times;
-
--- 3. Total Books by Author
-Select a.first_name,a.last_name, count(b.title) as Number_of_books
-from author a 
-JOIN bookauthor ba ON a.author_id=ba.author_id
-JOIN book b ON b.book_id=ba.book_id 
-
-group by a.author_id order by Number_of_books DESC;
-
 -- 1.Excercise:
 -- Books with their authors and categories
 
@@ -106,3 +78,49 @@ ELSE "Enough Stock"
 END as Stock_Level from CTE
 ;
 
+
+
+-- BOOK ANALYSIS
+
+-- 1.Common Books that are found in all libraries and total copies of them available
+
+SELECT b.title, SUM(b.available_copies) AS Total_Copies_Available
+FROM book b
+GROUP BY b.title
+HAVING COUNT(DISTINCT b.library_id) = 3;
+
+-- 2.Books that got borrowed most in order (Hot Items)
+
+with cte as (
+select b.title as Title, sum(b.total_copies) as Total, sum(b.available_copies) as Available
+from book b group by b.title)
+select Title, Total - Available as Borrowed_Times, Available 
+from cte order by Borrowed_Times;
+
+-- 3. Total Books by Author
+Select a.first_name,a.last_name, count(b.title) as Number_of_books
+from author a 
+JOIN bookauthor ba ON a.author_id=ba.author_id
+JOIN book b ON b.book_id=ba.book_id 
+
+group by a.author_id order by Number_of_books DESC;
+
+
+
+# 4.Reduce the avaialabilty by 2 for book_id =1 if it's negative Roll Back
+
+-- Start a transaction
+START TRANSACTION;
+
+-- Check the current available copies for Book ID 1
+SELECT title, available_copies FROM Book WHERE book_id = 1;
+
+-- Reduce available copies 
+UPDATE Book SET available_copies = available_copies - 2 WHERE book_id = 1;
+
+--  Check if update is valid
+SELECT available_copies FROM Book WHERE book_id = 1;
+
+-- If available_copies >= 0, commit the transaction
+-- Else, rollback
+ROLLBACK;

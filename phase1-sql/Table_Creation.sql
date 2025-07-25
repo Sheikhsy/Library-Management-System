@@ -1,4 +1,3 @@
-Populated tables with related sample records
 Create Database lb_system;
 
 Use lb_system;

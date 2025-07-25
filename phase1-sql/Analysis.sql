@@ -80,3 +80,29 @@ GROUP BY b.title order by Avg_Rating DESC;
 
 
 -- Books available in each library with stock levels
+
+desc Book;
+With Details as (
+SELECT 
+  l.name AS Library_Name,
+  COUNT(b.book_id) AS Total_Book_Titles,
+  SUM(b.total_copies) AS Total_Copies,
+  SUM(b.available_copies) AS Available_Copies
+FROM Book b
+JOIN `Library` l ON b.library_id = l.library_id
+GROUP BY l.library_id
+ORDER BY l.name),
+CTE as(
+Select Library_Name,Total_Book_Titles,Total_Copies,Available_Copies,
+FLOOR((available_copies / total_copies) * 100) AS Availability_Percentage
+from details
+)
+Select Library_Name,Total_Book_Titles,Total_Copies,Available_Copies,Availability_Percentage,
+
+CASE WHEN Available_Copies = 0 THEN "Out of Stock"
+WHEN Available_Copies = Total_Copies THEN "Full Stock"
+WHEN Availability_Percentage<0.4 THEN "Low Stock"
+ELSE "Enough Stock"
+END as Stock_Level from CTE
+;
+

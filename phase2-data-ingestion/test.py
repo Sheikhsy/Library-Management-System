@@ -3,6 +3,15 @@ from typing import Optional
 import re
 from datetime import datetime, date
 
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,  # or DEBUG for more details
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+
 class Book(BaseModel):
     title: str
     isbn: str
@@ -51,7 +60,7 @@ class Book(BaseModel):
         return self
 
 
-# ✅ Dummy JSON Test (Valid Case)
+#  Dummy JSON Test (Valid Case)
 valid_data = {
     "title": "Introduction to Python",
     "isbn": "9780135166307",
@@ -62,7 +71,7 @@ valid_data = {
     "published_date": "29-07-2025"
 }
 
-# ❌ Dummy JSON Test (Invalid Case)
+#  Dummy JSON Test (Invalid Case)
 invalid_data = {
     "title": "  ",  # Empty title
     "isbn": "123456789",  # Invalid ISBN
@@ -73,16 +82,17 @@ invalid_data = {
     "published_date": "2025-07-29"  # Wrong format
 }
 
-print("\nValid Book:")
+logger.info("\nValid Book:")
 try:
     book = Book(**valid_data)
-    print(book)
+    logger.info(book)
 except Exception as e:
-    print("Validation error:", e)
+    logger.error("Validation error: %s", e)
 
-print("\nInvalid Book:")
+logger.info("\nInvalid Book:")
 try:
     book = Book(**invalid_data)
-    print(book)
+    logger.info(book)
 except Exception as e:
-    print("Validation error:", e)
+    logger.error("Validation error: %s", e)
+

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 #Library Model
-class Library(BaseModel):
+class Library1(BaseModel):
     library_id:int
     name:str
     campus_location:str
@@ -22,7 +22,7 @@ class Library(BaseModel):
 
     @field_validator("library_id", mode="before")
     def validate_id(cls, v):
-        if not isinstance(v, int) or v <= 0:
+        if  v <= 0:
             raise ValueError("ID must be a positive integer")
         return v
 
@@ -31,9 +31,9 @@ class Library(BaseModel):
         char_only = re.sub(r"\d", "", v)
         return ' '.join(char_only.strip().split()).title()
 
-    @field_validator("contact_mail")
+    @field_validator("contact_email")
     def email_pattern(cls, v:str)->str:
-        pattern=r"^[\w\.-]+@[\w\.]+\.\w{2,}$"
+        pattern=r"^[\w\.-]+@[\w\.]+.\w{2,}$"
         if not re.match(pattern,v):
             raise ValueError("Invalid Email!")
         return v
@@ -80,12 +80,6 @@ class Book(BaseModel):
     def cant_be_negative(cls, v: int) -> int:
         if v < 0:
             raise ValueError("Available copies cannot be negative")
-        return v
-
-    @field_validator("price")
-    def price_must_be_non_negative(cls, v: float) -> float:
-        if v < 0:
-            raise ValueError("Price cannot be negative")
         return v
 
     @field_validator("publication_date", mode="before")
@@ -140,8 +134,14 @@ class Borrowing(BaseModel):
             raise ValueError("Date must be in format DD-MM-YYYY (e.g., 29-07-2025)")
 
 
-    @field_validator("library_id", mode="before")
-    def validate_lib_id(cls, v):
+    @field_validator("book_id", mode="before")
+    def validate_book_id(cls, v):
+        if not isinstance(v, int) or v <= 0:
+            raise ValueError("ID must be a positive integer")
+        return v
+
+    @field_validator("member_id", mode="before")
+    def validate_mem_id(cls, v):
         if not isinstance(v, int) or v <= 0:
             raise ValueError("ID must be a positive integer")
         return v
@@ -280,39 +280,13 @@ class Review(BaseModel):
             raise ValueError("Review date cannot be in the future.")
         return v
 
+class Category(BaseModel):
+    category_id:int
+    name: str
+    description: Optional[str] = None
 
-#  Dummy JSON Test (Valid Case)
-valid_data = {
-    "title": "Introduction to Python",
-    "isbn": "9780135166307",
-    "total_copies": 10,
-    "available_copies": 5,
-    "price": 599.99,
-    "publisher": "Tech Books Inc",
-    "published_date": "29-07-2025",
-}
-
-#  Dummy JSON Test (Invalid Case)
-invalid_data = {
-    "title": "  ",  # Empty title
-    "isbn": "123456789",  # Invalid ISBN
-    "total_copies": 3,
-    "available_copies": 5,  # More than total
-    "price": -200.0,  # Negative price
-    "publisher": "Bad Books Co.",
-    "published_date": "2025-07-29",  # Wrong format
-}
-
-logger.info("\nValid Book:")
-try:
-    book = Book(**valid_data)
-    logger.info(book)
-except Exception as e:
-    logger.error("Validation error: %s", e)
-
-logger.info("\nInvalid Book:")
-try:
-    book = Book(**invalid_data)
-    logger.info(book)
-except Exception as e:
-    logger.error("Validation error: %s", e)
+    @field_validator("name")
+    def name_must_not_be_blank(cls, v:str)->str:
+        if not v.strip():
+            raise ValueError("Category name must not be blank")
+        return v

@@ -1,19 +1,12 @@
-import sqlalchemy as db
-from sqlalchemy import (create_engine,Integer,Numeric,String,Date,ForeignKey,Column,Enum,TEXT,
+from sqlalchemy import (Integer,Numeric,String,Date,ForeignKey,Column,Enum,TEXT,
                         CheckConstraint)
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import declarative_base,relationship,sessionmaker
 
-
-engine = db.create_engine("mysql+pymysql://root:root@localhost/lb_system")
-
-# CREATING THE SESSION OBJECT
-Session = sessionmaker(bind=engine)
-session = Session()
+from sqlalchemy.orm import declarative_base,relationship
 
 Base=declarative_base()
-class Library(Base):
-    __tablename__ = "Library"
+
+class Library1(Base):
+    __tablename__ = "Library1"
     library_id=Column(Integer,primary_key=True,autoincrement=True)
     name=Column(String(100),nullable=False)
     campus_location=Column(String(100),nullable=False)
@@ -24,13 +17,13 @@ class Library(Base):
 class Book(Base):
     __tablename__="Book"
     book_id=Column(Integer,primary_key=True,autoincrement=True)
-    library_id=Column(Integer,ForeignKey('Library.library_id',onupdate="CASCADE"))
+    library_id=Column(Integer,ForeignKey('Library1.library_id',onupdate="CASCADE"))
     title=Column(String(200),nullable=False)
     isbn=Column(String(20),unique=True)
     publication_date=Column(Date,nullable=False)
     total_copies=Column(Integer,nullable=False)
     available_copies=Column(Integer,nullable=False)
-    library = relationship("Library", back_populates="books")
+    library = relationship("Library1", back_populates="books")
     borrowings = relationship("Borrowing", back_populates="book")
     book_categories = relationship("BookCategory", back_populates="book")
     book_authors = relationship("BookAuthor", back_populates="book")
@@ -57,7 +50,6 @@ class Author(Base):
     nationality=Column(String(200),nullable=False)
     biography=Column(TEXT,nullable=True)
     book_authors = relationship("BookAuthor", back_populates="author")
-
 
 class Borrowing(Base):
     __tablename__ = "Borrowing"
@@ -86,10 +78,6 @@ class Review(Base):
     )
     member = relationship("Member", back_populates="reviews")
     book = relationship("Book", back_populates="reviews")
-
-
-
-
 
 class Category(Base):
     __tablename__ = "Category"

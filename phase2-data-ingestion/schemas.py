@@ -113,27 +113,27 @@ class Borrowing(BaseModel):
 
 
     @field_validator("borrowing_id", mode="before")
-    def validate_id(cls, v:int)->int:
+    def validate_borrow_id(cls, v:int)->int:
         if not isinstance(v, int) or v <= 0:
             raise ValueError("ID must be a positive integer")
         return v
 
     @field_validator("borrow_date", mode="before")
-    def parse_and_validate_date(cls, v: str) -> date:
+    def parse_and_validate_borrow_date(cls, v: str) -> date:
         try:
                 return datetime.strptime(v, "%d-%m-%Y").date()
         except ValueError:
             raise ValueError("Date must be in format DD-MM-YYYY (e.g., 29-07-2025)")
 
     @field_validator("due_date", mode="before")
-    def parse_and_validate_date(cls, v: str) -> date:
+    def parse_and_validate_due_date(cls, v: str) -> date:
         try:
                 return datetime.strptime(v, "%d-%m-%Y").date()
         except ValueError:
             raise ValueError("Date must be in format DD-MM-YYYY (e.g., 29-07-2025)")
 
     @field_validator("return_date", mode="before")
-    def parse_and_validate_date(cls, v: str) -> date:
+    def parse_and_validate_return_date(cls, v: str) -> date:
         try:
                 return datetime.strptime(v, "%d-%m-%Y").date()
         except ValueError:
@@ -141,7 +141,7 @@ class Borrowing(BaseModel):
 
 
     @field_validator("library_id", mode="before")
-    def validate_id(cls, v):
+    def validate_lib_id(cls, v):
         if not isinstance(v, int) or v <= 0:
             raise ValueError("ID must be a positive integer")
         return v
@@ -168,10 +168,10 @@ class Member(BaseModel):
 
 
     @field_validator("first_name", mode="before")
-    def normalize_name(cls, v: str) -> str:
+    def normalize_first_name(cls, v: str) -> str:
         return ' '.join(v.strip().split()).title()
     @field_validator("last_name", mode="before")
-    def normalize_name(cls, v: str) -> str:
+    def normalize_last_name(cls, v: str) -> str:
         return ' '.join(v.strip().split()).title()
 
     @field_validator("phone", mode="before")

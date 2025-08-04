@@ -2,7 +2,7 @@ from pydantic import BaseModel, field_validator, model_validator
 import re
 from typing import Optional, Literal
 from datetime import datetime, date
-
+from decimal import Decimal
 import logging
 
 logging.basicConfig(
@@ -22,7 +22,12 @@ class Library1(BaseModel):
 
     @field_validator("library_id", mode="before")
     def validate_id(cls, v):
-        if  v <= 0:
+        try:
+            v = int(v)
+        except (TypeError, ValueError):
+            raise ValueError("ID must be a valid integer")
+
+        if v <= 0:
             raise ValueError("ID must be a positive integer")
         return v
 
@@ -33,7 +38,7 @@ class Library1(BaseModel):
 
     @field_validator("contact_email")
     def email_pattern(cls, v:str)->str:
-        pattern=r"^[\w\.-]+@[\w\.]+.\w{2,}$"
+        pattern=r"^[\w\.-]+@[\w\.-]+\.\w{2,}$"
         if not re.match(pattern,v):
             raise ValueError("Invalid Email!")
         return v
@@ -55,8 +60,8 @@ class Library1(BaseModel):
 
 #Book Model
 class Book(BaseModel):
-    Book_id:int
-    Libray_id:int
+    book_id:int
+    library_id:int
     title: str
     isbn: str
     publication_date: date
@@ -83,7 +88,9 @@ class Book(BaseModel):
         return v
 
     @field_validator("publication_date", mode="before")
-    def parse_and_validate_date(cls, v: str) -> date:
+    def parse_and_validate_date(cls, v: date)->date:
+        if isinstance(v, date):
+            return v
         try:
             return datetime.strptime(v, "%d-%m-%Y").date()
         except ValueError:
@@ -100,49 +107,60 @@ class Borrowing(BaseModel):
     borrowing_id:int
     borrow_date: date
     due_date: date
-    return_date: date
-    late_fee: float
+    return_date: date | None
+    late_fee: float | None
     book_id:int
     member_id:int
 
-
     @field_validator("borrowing_id", mode="before")
-    def validate_borrow_id(cls, v:int)->int:
-        if not isinstance(v, int) or v <= 0:
+    def validate_b__id(cls, v):
+        try:
+            v = int(v)
+        except (TypeError, ValueError):
+            raise ValueError("ID must be a valid integer")
+
+        if v <= 0:
             raise ValueError("ID must be a positive integer")
         return v
 
-    @field_validator("borrow_date", mode="before")
-    def parse_and_validate_borrow_date(cls, v: str) -> date:
+    @field_validator("borrow_date", "due_date", "return_date", mode="before")
+    def parse_dates(cls, v: str) -> Optional[date]:
+        if not v or v.strip() == "":
+            return None
         try:
-                return datetime.strptime(v, "%d-%m-%Y").date()
+            return datetime.strptime(v.strip(), "%d-%m-%Y").date()
         except ValueError:
             raise ValueError("Date must be in format DD-MM-YYYY (e.g., 29-07-2025)")
 
-    @field_validator("due_date", mode="before")
-    def parse_and_validate_due_date(cls, v: str) -> date:
+    @field_validator("late_fee", mode="before")
+    def parse_late_fee(cls, v: str) -> Optional[Decimal]:
+        if not v or v.strip() == "":
+            return None
         try:
-                return datetime.strptime(v, "%d-%m-%Y").date()
-        except ValueError:
-            raise ValueError("Date must be in format DD-MM-YYYY (e.g., 29-07-2025)")
-
-    @field_validator("return_date", mode="before")
-    def parse_and_validate_return_date(cls, v: str) -> date:
-        try:
-                return datetime.strptime(v, "%d-%m-%Y").date()
-        except ValueError:
-            raise ValueError("Date must be in format DD-MM-YYYY (e.g., 29-07-2025)")
+            return Decimal(v.strip())
+        except Exception:
+            raise ValueError("Late fee must be a valid number (e.g., 5.00)")
 
 
     @field_validator("book_id", mode="before")
-    def validate_book_id(cls, v):
-        if not isinstance(v, int) or v <= 0:
+    def validate_b_id(cls, v):
+        try:
+            v = int(v)
+        except (TypeError, ValueError):
+            raise ValueError("ID must be a valid integer")
+
+        if v <= 0:
             raise ValueError("ID must be a positive integer")
         return v
 
     @field_validator("member_id", mode="before")
-    def validate_mem_id(cls, v):
-        if not isinstance(v, int) or v <= 0:
+    def validate_m_id(cls, v):
+        try:
+            v = int(v)
+        except (TypeError, ValueError):
+            raise ValueError("ID must be a valid integer")
+
+        if v <= 0:
             raise ValueError("ID must be a positive integer")
         return v
 
@@ -174,6 +192,17 @@ class Member(BaseModel):
     def normalize_last_name(cls, v: str) -> str:
         return ' '.join(v.strip().split()).title()
 
+    @field_validator("member_type", mode="before")
+    def validate_member_type(cls, v: str) -> str:
+        if not isinstance(v, str):
+            raise ValueError("Member type must be a string.")
+
+        cleaned = v.strip().title()
+
+        if cleaned not in {"Student", "Faculty"}:
+            raise ValueError("Member type must be either 'Student' or 'Faculty'.")
+
+        return cleaned
     @field_validator("phone", mode="before")
     def validate_phone_number(cls, v: str) -> str:
         digits = re.sub(r"\D", "", v)  # Remove non-digit characters
@@ -187,6 +216,16 @@ class Member(BaseModel):
         if v > date.today():
             raise ValueError("Join date cannot be in the future.")
         return v
+
+    @field_validator("registration_date", mode="before")
+    def parse_and_validate_date(cls, v):
+        if isinstance(v, date):
+            return v  # Already a valid date object
+        try:
+            return datetime.strptime(v, "%d-%m-%Y").date()
+        except ValueError:
+            raise ValueError("registration_date must be in format DD-MM-YYYY (e.g., 29-07-2025)")
+
     @field_validator("email")
     def email_pattern(cls, v:str)->str:
         pattern=r"^[\w\.-]+@[\w\.]+\.\w{2,}$"
@@ -256,9 +295,36 @@ class Review(BaseModel):
     review_date: date
 
     @field_validator("review_id")
-    def validate_review_id(cls, v: int) -> int:
+    def validate_review_id(cls, v):
+        try:
+            v = int(v)
+        except (TypeError, ValueError):
+            raise ValueError("ID must be a valid integer")
+
         if v <= 0:
-            raise ValueError("Review ID must be a positive integer.")
+            raise ValueError("ID must be a positive integer")
+        return v
+
+    @field_validator("book_id", mode="before")
+    def validate_b_id(cls, v):
+        try:
+            v = int(v)
+        except (TypeError, ValueError):
+            raise ValueError("ID must be a valid integer")
+
+        if v <= 0:
+            raise ValueError("ID must be a positive integer")
+        return v
+
+    @field_validator("member_id", mode="before")
+    def validate_m_id(cls, v):
+        try:
+            v = int(v)
+        except (TypeError, ValueError):
+            raise ValueError("ID must be a valid integer")
+
+        if v <= 0:
+            raise ValueError("ID must be a positive integer")
         return v
 
     # Validate rating range (0 to 5)
@@ -274,11 +340,19 @@ class Review(BaseModel):
         return ' '.join(v.strip().split())
 
     # Optionally validate review_date not in the future
-    @field_validator("review_date")
-    def validate_review_date(cls, v: date) -> date:
-        if v > date.today():
+    @field_validator("review_date", mode="before")
+    def parse_and_validate_review_date(cls, v: str) -> Optional[date]:
+        if not v or v.strip() == "":
+            return None
+        try:
+            parsed_date = datetime.strptime(v.strip(), "%d-%m-%Y").date()
+        except ValueError:
+            raise ValueError("Date must be in format DD-MM-YYYY (e.g., 29-07-2025)")
+
+        if parsed_date > date.today():
             raise ValueError("Review date cannot be in the future.")
-        return v
+
+        return parsed_date
 
 class Category(BaseModel):
     category_id:int
@@ -289,4 +363,15 @@ class Category(BaseModel):
     def name_must_not_be_blank(cls, v:str)->str:
         if not v.strip():
             raise ValueError("Category name must not be blank")
+        return v
+
+    @field_validator("category_id", mode="before")
+    def validate_b_id(cls, v):
+        try:
+            v = int(v)
+        except (TypeError, ValueError):
+            raise ValueError("ID must be a valid integer")
+
+        if v <= 0:
+            raise ValueError("ID must be a positive integer")
         return v

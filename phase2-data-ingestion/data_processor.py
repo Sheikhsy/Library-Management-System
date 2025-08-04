@@ -5,38 +5,41 @@ import os
 import sys
 from datetime import datetime
 from typing import Dict, Any, List, Tuple
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.engine.url import make_url
-from model import Base, Library1, Book, Author, Member
+from model import Base, Library1, Book, Author, Member ,Borrowing, Review,Category
 from schemas import Library1 as LibrarySchema, Book as BookSchema, Author as AuthorSchema, Member as MemberSchema
+from schemas import Borrowing as BorrowingSchema , Review as ReviewSchema,Category as CategorySchema
 from logging.handlers import RotatingFileHandler
-
 
 # Logging
 def configure_logging(level: str, log_path: str = "etl.log") -> None:
     numeric_level = getattr(logging, level.upper(), logging.INFO)
     log_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 
+    # Ensure the directory exists
     os.makedirs(os.path.dirname(log_path) or ".", exist_ok=True)
 
+    # Clear existing handlers (avoids duplicate logs if reconfigured)
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
 
+    # Console Handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(numeric_level)
     console_handler.setFormatter(logging.Formatter(log_format))
 
+    # Rotating File Handler (DEBUG and above)
     file_handler = RotatingFileHandler(log_path, maxBytes=5_000_000, backupCount=2)
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(logging.Formatter(log_format))
 
+    # Apply configuration
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.DEBUG,  # Root logger level
         handlers=[console_handler, file_handler]
     )
-
 
 # CLI
 def parse_cli():
@@ -49,28 +52,10 @@ def parse_cli():
                         choices=["DEBUG", "INFO", "WARNING", "ERROR"])
     return parser.parse_args()
 
-def ensure_database_exists(db_url: str) -> None:
-    url = make_url(db_url)
-    database = url.database
-    if not database:
-        raise ValueError("No database name found in URL")
 
-    # Temporarily remove DB name
-    url_without_db = url.set(database=None)
-    temp_engine = create_engine(url_without_db)
-
-    with temp_engine.connect() as conn:
-        conn.execute(text(f"CREATE DATABASE IF NOT EXISTS `{database}`"))
-        logging.info(f"Ensured database `{database}` exists.")
-
-    temp_engine.dispose()
-
-
-# Get session after DB creation
-
+# DB session
 def get_session(db_url: str) -> Session:
-    ensure_database_exists(db_url)
-    engine = create_engine(db_url, echo=False)
+    engine = create_engine(db_url, echo=False, pool_pre_ping=True)
     Base.metadata.create_all(engine)
     return sessionmaker(bind=engine)()
 
@@ -96,6 +81,7 @@ def process_file(
             try:
                 clean = schema_cls(**{k.strip(): v for k, v in row.items()}).model_dump()
 
+                # natural-key duplicate check
                 if natural_key and clean.get(natural_key):
                     col = getattr(model_cls, natural_key)
                     if session.query(model_cls).filter(col == clean[natural_key]).first():
@@ -103,17 +89,19 @@ def process_file(
                         skipped += 1
                         continue
 
+                # date string → date object
                 for df in ("publication_date", "birth_date", "registration_date"):
                     if df in clean and isinstance(clean[df], str):
                         clean[df] = datetime.strptime(clean[df], "%Y-%m-%d").date()
 
+                # safe insert
                 try:
                     session.add(model_cls(**clean))
                     session.flush()
                     inserted += 1
                 except IntegrityError as e:
                     logger.warning("Skipping row: %s", e.orig)
-                    session.rollback()
+                    session.rollback()   # only rolls back this row
                     invalid += 1
 
             except Exception as e:
@@ -131,30 +119,39 @@ def main() -> None:
     configure_logging(args.log_level)
     session = get_session(args.db)
     summary: Dict[str, Tuple[int, int, int]] = {}
-    csv_dir = os.path.abspath(args.directory)  # Ensure absolute path
+
 
     summary["libraries"] = process_file(
-        os.path.join(csv_dir, "libraries.csv"),  # Ensure file name matches actual file
+        os.path.join(args.directory, "library.csv"),
         LibrarySchema, Library1, session, "contact_email"
     )
 
     summary["books"] = process_file(
-        os.path.join(csv_dir, "books.csv"),
+        os.path.join(args.directory, "book.csv"),
         BookSchema, Book, session, "isbn"
     )
 
     summary["authors"] = process_file(
-        os.path.join(csv_dir, "authors.csv"),
-        AuthorSchema, Author, session, None
+        os.path.join(args.directory, "author.csv"),
+        AuthorSchema, Author, session, None   # no single natural key
     )
 
     summary["members"] = process_file(
-        os.path.join(csv_dir, "members.csv"),
+        os.path.join(args.directory, "member.csv"),
         MemberSchema, Member, session, "email"
     )
-
-
-
+    summary["borrowings"] = process_file(
+        os.path.join(args.directory, "borrowing.csv"),
+        BorrowingSchema, Borrowing, session, None
+    )
+    summary["reviews"] = process_file(
+        os.path.join(args.directory, "review.csv"),
+        ReviewSchema, Review, session, None
+    )
+    summary["categories"] = process_file(
+        os.path.join(args.directory, "category.csv"),
+        CategorySchema, Category, session, None
+    )
     session.close()
     logging.info("=== ETL SUMMARY ===")
     for entity, (ins, sk, inv) in summary.items():

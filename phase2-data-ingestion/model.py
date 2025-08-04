@@ -11,7 +11,7 @@ class Library1(Base):
     name=Column(String(100),nullable=False)
     campus_location=Column(String(100),nullable=False)
     contact_email=Column(String(100),nullable=False)
-    phone_number=Column(String(15),nullable=False)
+    phone_number=Column(String(100),nullable=False)
     books = relationship("Book", back_populates="library")
 
 class Book(Base):
@@ -46,7 +46,8 @@ class Author(Base):
     author_id=Column(Integer,primary_key=True,autoincrement=True)
     first_name=Column(String(200),nullable=False)
     last_name=Column(String(200),nullable=False)
-    birth_date=Column(Date,nullable=False)
+    email=Column(String(200),nullable=False)
+    phone_number=Column(String(20),nullable=True)
     nationality=Column(String(200),nullable=False)
     biography=Column(TEXT,nullable=True)
     book_authors = relationship("BookAuthor", back_populates="author")
@@ -59,7 +60,7 @@ class Borrowing(Base):
     book_id = Column(Integer, ForeignKey("Book.book_id", onupdate="CASCADE"))
     borrow_date = Column(Date)
     due_date = Column(Date)
-    return_date = Column(Date)
+    return_date = Column(Date,nullable=True)
     late_fee = Column(Numeric(10, 2))
 
     member = relationship("Member", back_populates="borrowings")

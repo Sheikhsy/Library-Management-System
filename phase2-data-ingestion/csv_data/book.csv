@@ -1,0 +1,11 @@
+book_id,library_id,title,isbn,publication_date,total_copies,available_copies
+1,1,The Alchemist,9780061122415,15-04-1988,10,6
+2,1,Sapiens: A Brief History of Humankind,9780099590088,01-01-2011,15,12
+3,2,1984,9780451524935,08-06-1949,8,2
+4,3,To Kill a Mockingbird,9780060935467,11-07-1960,12,9
+5,3,The Great Gatsby,9780743273565,10-04-1925,5,1
+6,2,Thinking, Fast and Slow,9780374533557,25-10-2011,7,5
+7,4,The Catcher in the Rye,9780316769488,16-07-1951,6,4
+8,4,Brave New World,9780060850524,01-01-1932,10,8
+9,5,The Hobbit,9780547928227,21-09-1937,14,10
+10,5,The Power of Habit,9780812981605,28-02-2012,9,7

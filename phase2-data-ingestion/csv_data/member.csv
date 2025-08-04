@@ -1,0 +1,11 @@
+member_id,first_name,last_name,email,phone,member_type,registration_date
+1,Ananya,Sharma,ananya.sharma@example.com,9876543210,Student,05-01-2024
+2,Rahul,Das,rahul.das@university.edu,9123456789,Faculty,12-03-2023
+3,Meera,Iyer,meera.iyer@college.ac.in,9001122233,Student,27-07-2025
+4,Alok,Nath,alok.nath@faculty.edu,9876500011,Faculty,10-09-2022
+5,Soumya,Ghosh,soumya.ghosh@mail.com,9334455667,Student,15-02-2024
+6,Kiran,Rao,kiran.rao@institute.org,9998887776,Faculty,08-11-2021
+7,Tanvi,Singh,tanvi.singh@campus.edu,8889900099,Student,03-04-2024
+8,Vivek,Rathi,vivek.rathi@faculty.ac.in,9898123456,Faculty,29-12-2023
+9,Arjun,Roy,arjun.roy@student.org,9011223344,Student,22-06-2024
+10,Shalini,Verma,shalini.verma@college.edu,9321456790,Faculty,19-08-2022

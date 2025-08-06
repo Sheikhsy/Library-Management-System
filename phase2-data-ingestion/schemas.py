@@ -60,13 +60,16 @@ class Library1(BaseModel):
 
 #Book Model
 class Book(BaseModel):
-    book_id:int
+    book_id: Optional[int] = None
     library_id:int
     title: str
-    isbn: str
-    publication_date: date
-    total_copies: int
-    available_copies: int
+    isbn: Optional[str] = None
+    publication_date: date | None
+    total_copies: int | None
+    available_copies: int |None
+    summary: Optional[str] = None
+    language: Optional[str] = None
+    num_pages: Optional[int] = None
 
     @field_validator("title")
     def title_not_empty(cls, v: str) -> str:
@@ -74,11 +77,13 @@ class Book(BaseModel):
             raise ValueError("Title cannot be empty")
         return v
 
-    @field_validator("isbn")
-    def validate_isbn(cls, v: str) -> str:
-        pattern = r"^(97(8|9))?\d{9}(\d|X)$"
+    @field_validator('isbn')
+    def validate_isbn(cls, v):
+        if v is None:
+            return v
+        pattern = r'^\d{10}(\d{3})?$'  # ISBN-10 or ISBN-13 (only digits)
         if not re.match(pattern, v.replace("-", "")):
-            raise ValueError("Invalid ISBN format")
+            raise ValueError("Invalid ISBN format.")
         return v
 
     @field_validator("available_copies")
@@ -87,15 +92,14 @@ class Book(BaseModel):
             raise ValueError("Available copies cannot be negative")
         return v
 
-    @field_validator("publication_date", mode="before")
-    def parse_and_validate_date(cls, v: date)->date:
-        if isinstance(v, date):
-            return v
+    @field_validator("publication_date")
+    def parse_and_validate_date(cls, v):
+        if not v:
+            return None  # Return None if value is missing or null
         try:
             return datetime.strptime(v, "%d-%m-%Y").date()
         except ValueError:
-            raise ValueError("Date must be in format DD-MM-YYYY (e.g., 29-07-2025)")
-
+            raise ValueError(f"Invalid date format: {v}. Expected format is DD-MM-YYYY")
     @model_validator(mode="after")
     def check_copies_consistency(self) -> "Book":
         if self.available_copies > self.total_copies:
@@ -241,20 +245,16 @@ class Member(BaseModel):
 
 #Author Model
 class Author(BaseModel):
-    author_id: int
+    author_id:  Optional[int] = None
     first_name: str
     last_name: str
     email: str| None
+    birth_date:date|None
     phone_number: Optional[str] = None
     nationality: Optional[str] = None
     biography: Optional[str] = None
 
-    # Validate ID
-    @field_validator("author_id")
-    def validate_id(cls, v: int) -> int:
-        if v <= 0:
-            raise ValueError("Author ID must be a positive integer.")
-        return v
+
 
     # Normalize first name
     @field_validator("first_name", mode="before")

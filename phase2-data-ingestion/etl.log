@@ -2163,3 +2163,49 @@ late_fee
 2025-08-04 15:23:15,564 [INFO] root: borrowings : inserted=6   skipped=0   invalid=4  
 2025-08-04 15:23:15,564 [INFO] root: reviews    : inserted=6   skipped=0   invalid=4  
 2025-08-04 15:23:15,564 [INFO] root: categories : inserted=2   skipped=0   invalid=3  
+[2025-08-06 15:47:00,422] INFO in api_fetcher: Searching for author: John Buchan
+[2025-08-06 15:47:02,256] INFO in api_fetcher: Saved author: John Buchan (ID: 24649)
+[2025-08-06 15:47:03,245] INFO in api_fetcher: Found 10 books for author.
+[2025-08-06 15:47:03,273] INFO in api_fetcher: Saved book: High stakes and desperate men (ID: 51)
+[2025-08-06 15:47:03,275] INFO in api_fetcher: Linked book 'High stakes and desperate men' to author 'John Buchan'
+[2025-08-06 15:47:03,289] INFO in api_fetcher: Saved book: John Burnet of Barns (ID: 52)
+[2025-08-06 15:47:03,305] INFO in api_fetcher: Linked book 'John Burnet of Barns' to author 'John Buchan'
+[2025-08-06 15:47:03,305] INFO in api_fetcher: Saved book: Greenmantle (ID: 53)
+[2025-08-06 15:47:03,321] INFO in api_fetcher: Linked book 'Greenmantle' to author 'John Buchan'
+[2025-08-06 15:47:03,337] INFO in api_fetcher: Saved book: The Pilgrim fathers (ID: 54)
+[2025-08-06 15:47:03,345] INFO in api_fetcher: Linked book 'The Pilgrim fathers' to author 'John Buchan'
+[2025-08-06 15:47:03,352] INFO in api_fetcher: Saved book: Italy (ID: 55)
+[2025-08-06 15:47:03,352] INFO in api_fetcher: Linked book 'Italy' to author 'John Buchan'
+[2025-08-06 15:47:03,368] INFO in api_fetcher: Saved book: Francis and Riversdale Grenfell (ID: 56)
+[2025-08-06 15:47:03,386] INFO in api_fetcher: Linked book 'Francis and Riversdale Grenfell' to author 'John Buchan'
+[2025-08-06 15:47:03,389] INFO in api_fetcher: Saved book: Great Britain (ID: 57)
+[2025-08-06 15:47:03,404] INFO in api_fetcher: Linked book 'Great Britain' to author 'John Buchan'
+[2025-08-06 15:47:03,404] INFO in api_fetcher: Saved book: A history of the great war (ID: 58)
+[2025-08-06 15:47:03,425] INFO in api_fetcher: Linked book 'A history of the great war' to author 'John Buchan'
+[2025-08-06 15:47:03,431] INFO in api_fetcher: Saved book: Prester John (ID: 59)
+[2025-08-06 15:47:03,432] INFO in api_fetcher: Linked book 'Prester John' to author 'John Buchan'
+[2025-08-06 15:47:03,448] INFO in api_fetcher: Saved book: The history of the South African forces in France (ID: 60)
+[2025-08-06 15:47:03,448] INFO in api_fetcher: Linked book 'The history of the South African forces in France' to author 'John Buchan'
+[2025-08-06 15:53:34,804] INFO in api_fetcher: Searching for author: John Buchan
+[2025-08-06 15:53:36,749] INFO in api_fetcher: Saved author: John Buchan (ID: 24650)
+[2025-08-06 15:53:37,738] INFO in api_fetcher: Found 10 books for author.
+[2025-08-06 15:53:37,769] INFO in api_fetcher: Saved book: High stakes and desperate men (ID: 61)
+[2025-08-06 15:53:37,784] INFO in api_fetcher: Linked book 'High stakes and desperate men' to author 'John Buchan'
+[2025-08-06 15:53:37,784] INFO in api_fetcher: Saved book: John Burnet of Barns (ID: 62)
+[2025-08-06 15:53:37,811] INFO in api_fetcher: Linked book 'John Burnet of Barns' to author 'John Buchan'
+[2025-08-06 15:53:37,816] INFO in api_fetcher: Saved book: Greenmantle (ID: 63)
+[2025-08-06 15:53:37,832] INFO in api_fetcher: Linked book 'Greenmantle' to author 'John Buchan'
+[2025-08-06 15:53:37,832] INFO in api_fetcher: Saved book: The Pilgrim fathers (ID: 64)
+[2025-08-06 15:53:37,858] INFO in api_fetcher: Linked book 'The Pilgrim fathers' to author 'John Buchan'
+[2025-08-06 15:53:37,864] INFO in api_fetcher: Saved book: Italy (ID: 65)
+[2025-08-06 15:53:37,880] INFO in api_fetcher: Linked book 'Italy' to author 'John Buchan'
+[2025-08-06 15:53:37,880] INFO in api_fetcher: Saved book: Francis and Riversdale Grenfell (ID: 66)
+[2025-08-06 15:53:37,899] INFO in api_fetcher: Linked book 'Francis and Riversdale Grenfell' to author 'John Buchan'
+[2025-08-06 15:53:37,911] INFO in api_fetcher: Saved book: Great Britain (ID: 67)
+[2025-08-06 15:53:37,927] INFO in api_fetcher: Linked book 'Great Britain' to author 'John Buchan'
+[2025-08-06 15:53:37,927] INFO in api_fetcher: Saved book: A history of the great war (ID: 68)
+[2025-08-06 15:53:37,944] INFO in api_fetcher: Linked book 'A history of the great war' to author 'John Buchan'
+[2025-08-06 15:53:37,965] INFO in api_fetcher: Saved book: Prester John (ID: 69)
+[2025-08-06 15:53:37,977] INFO in api_fetcher: Linked book 'Prester John' to author 'John Buchan'
+[2025-08-06 15:53:37,991] INFO in api_fetcher: Saved book: The history of the South African forces in France (ID: 70)
+[2025-08-06 15:53:37,991] INFO in api_fetcher: Linked book 'The history of the South African forces in France' to author 'John Buchan'

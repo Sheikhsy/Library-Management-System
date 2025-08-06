@@ -22,6 +22,9 @@ class Book(Base):
     isbn=Column(String(20),unique=True)
     publication_date=Column(Date,nullable=False)
     total_copies=Column(Integer,nullable=False)
+    summary = Column(TEXT, nullable=True)
+    language=Column(String(200),nullable=True)
+    num_pages=Column(Integer,nullable=True)
     available_copies=Column(Integer,nullable=False)
     library = relationship("Library1", back_populates="books")
     borrowings = relationship("Borrowing", back_populates="book")
@@ -46,6 +49,7 @@ class Author(Base):
     author_id=Column(Integer,primary_key=True,autoincrement=True)
     first_name=Column(String(200),nullable=False)
     last_name=Column(String(200),nullable=False)
+    birth_date = Column(Date, nullable=True)
     email=Column(String(200),nullable=False)
     phone_number=Column(String(20),nullable=True)
     nationality=Column(String(200),nullable=False)
@@ -103,7 +107,9 @@ class BookCategory(Base):
 
     book_id = Column(Integer, ForeignKey("Book.book_id", onupdate="CASCADE"), primary_key=True)
     category_id = Column(Integer, ForeignKey("Category.category_id", onupdate="CASCADE"), primary_key=True)
-
+    summary = Column(TEXT)
+    language = Column(String(50))
+    num_pages = Column(Integer)
     book = relationship("Book", back_populates="book_categories")
     category = relationship("Category", back_populates="book_categories")
 

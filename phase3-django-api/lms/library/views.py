@@ -74,6 +74,7 @@ class MemberViewSet(viewsets.ModelViewSet):
         borrowings = Borrowing.objects.filter(member=member).order_by('-borrow_date')
         serializer = BorrowingSerializer(borrowings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 class BorrowingViewSet(viewsets.ModelViewSet):
     queryset = Borrowing.objects.all()
     serializer_class = BorrowingSerializer
@@ -86,7 +87,9 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         if not book_id or not member_id:
             return Response({"error": "Both book_id and member_id are required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if book is available (available_copies > 0)
+        # Check if book is
+        #
+        # available (available_copies > 0)
         try:
             book = Book.objects.get(pk=book_id)
         except Book.DoesNotExist:

@@ -14,6 +14,8 @@ router.register(r'members', MemberViewSet)
 router.register(r'borrowings', BorrowingViewSet)
 router.register(r'reviews', ReviewViewSet)
 
+
+book_borrow = BookViewSet.as_view({"post": "borrow"})
 urlpatterns = [
     path('', include(router.urls)),
 ]

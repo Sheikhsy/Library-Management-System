@@ -130,7 +130,7 @@ class Borrowing(models.Model):
     due_date = models.DateField(blank=True, null=True)
     return_date = models.DateField(blank=True, null=True)
     late_fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-
+    returned = models.BooleanField(default=False)
 
     def clean(self):
         if self.return_date and self.borrow_date and self.return_date < self.borrow_date:

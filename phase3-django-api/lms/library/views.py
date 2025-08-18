@@ -1,7 +1,9 @@
 from django.db.models.functions import Trunc
+from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, filters,status
-from rest_framework.decorators import action, api_view
-from rest_framework.views import APIView
+from rest_framework.decorators import action
+
 
 from .models import Library, Book, Author, Category, Member, Borrowing, Review
 from .serializers import (
@@ -14,9 +16,56 @@ from django.db.models import Count
 from django.utils.timezone import now
 from django.db.models import Value, F
 from django.db.models.functions import Concat
+from drf_yasg import openapi
 
 
-
+@method_decorator(
+    name='list',
+    decorator=swagger_auto_schema(
+        operation_summary="List all Libraries",
+        operation_description="Returns a paginated list of Libraries.",
+        responses={200: LibrarySerializer(many=True)}
+    )
+)
+@method_decorator(
+    name='retrieve',
+    decorator=swagger_auto_schema(
+        operation_summary="Get a single Library",
+        operation_description="Retrieve detailed information about a single Library by ID.",
+        responses={200: LibrarySerializer()}
+    )
+)
+@method_decorator(
+    name='create',
+    decorator=swagger_auto_schema(
+        operation_summary="Create a new member",
+        request_body=LibrarySerializer,
+        responses={201: LibrarySerializer()}
+    )
+)
+@method_decorator(
+    name='update',
+    decorator=swagger_auto_schema(
+        operation_summary="Update a Library",
+        request_body=LibrarySerializer,
+        responses={200: LibrarySerializer()}
+    )
+)
+@method_decorator(
+    name='partial_update',
+    decorator=swagger_auto_schema(
+        operation_summary="Partially update a Library",
+        request_body=LibrarySerializer,
+        responses={200: LibrarySerializer()}
+    )
+)
+@method_decorator(
+    name='destroy',
+    decorator=swagger_auto_schema(
+        operation_summary="Delete a Library",
+        responses={204: 'No Content'}
+    )
+)
 class LibraryViewSet(viewsets.ModelViewSet):
     queryset = Library.objects.all()
     serializer_class = LibrarySerializer
@@ -30,6 +79,7 @@ class BookViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['book_id','title','authors__first_name','authors__last_name','categories__name']
     ordering_fields = ['title', 'book_id']
+
 
     @action(detail=True,methods=["get"])
     def availability(self,request,pk=None):
@@ -63,6 +113,55 @@ class CategoryViewSet(viewsets.ModelViewSet):
     search_fields = ['name']
     ordering_fields = ['category_id']
 
+
+
+@method_decorator(
+    name='list',
+    decorator=swagger_auto_schema(
+        operation_summary="List all members",
+        operation_description="Returns a paginated list of members.",
+        responses={200: MemberSerializer(many=True)}
+    )
+)
+@method_decorator(
+    name='retrieve',
+    decorator=swagger_auto_schema(
+        operation_summary="Get a single member",
+        operation_description="Retrieve detailed information about a single member by ID.",
+        responses={200: MemberSerializer()}
+    )
+)
+@method_decorator(
+    name='create',
+    decorator=swagger_auto_schema(
+        operation_summary="Create a new member",
+        request_body=MemberSerializer,
+        responses={201: MemberSerializer()}
+    )
+)
+@method_decorator(
+    name='update',
+    decorator=swagger_auto_schema(
+        operation_summary="Update a member",
+        request_body=MemberSerializer,
+        responses={200: MemberSerializer()}
+    )
+)
+@method_decorator(
+    name='partial_update',
+    decorator=swagger_auto_schema(
+        operation_summary="Partially update a member",
+        request_body=MemberSerializer,
+        responses={200: MemberSerializer()}
+    )
+)
+@method_decorator(
+    name='destroy',
+    decorator=swagger_auto_schema(
+        operation_summary="Delete a member",
+        responses={204: 'No Content'}
+    )
+)
 class MemberViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
@@ -124,7 +223,8 @@ class BorrowingViewSet(viewsets.ModelViewSet):
         book.save()
 
         serializer = BorrowingSerializer(borrowing)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"message":"Book has been Borrowed Successfully","data":serializer.data},
+                        status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['post'], url_path='return')
     def return_book(self, request):

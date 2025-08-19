@@ -1,0 +1,11 @@
+review_id,member_id,book_id,rating,comment,review_date
+1,1,2,5,"Excellent resource for beginners!",15-07-2024
+2,2,4,4,"Well-written and informative.",12-06-2024
+3,3,1,3,"Content is good but outdated examples.",25-06-2024
+4,4,5,5,"Very helpful for my research.",10-07-2024
+5,5,3,4,"Great illustrations and explanations.",28-06-2024
+6,6,7,2,"Too theoretical, lacks practical application.",22-07-2024
+7,7,6,5,"Loved the narrative style!",05-07-2024
+8,8,8,3,"Average read, expected more depth.",18-06-2024
+9,9,10,4,"Valuable insights for students.",08-07-2024
+10,10,9,5,"A must-read for enthusiasts.",20-07-2024

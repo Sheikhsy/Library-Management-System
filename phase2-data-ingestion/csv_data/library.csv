@@ -1,0 +1,6 @@
+library_id,name,campus_location,contact_email,phone_number
+1,Central Library,Kolkata,central@library.edu,03340001234
+2,City Library,Delhi,city@library.org,01122003456
+3,Community Library,Mumbai,community@library.in,02234561234
+4,University Library,Bangalore,univlib@university.ac.in,08012345678
+5,State Library,Chennai,state@tnlibrary.gov.in,04427654321

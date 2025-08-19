@@ -1,4 +1,4 @@
-Create Database lb_system;
+	Create Database lb_system;
 
 Use lb_system;
 

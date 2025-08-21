@@ -3,4 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="uv (phase3-django-api)" />
   </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="uv (phase3-django-api)" project-jdk-type="Python SDK" />
 </project>

@@ -71,6 +71,9 @@ class Book(models.Model):
     categories = models.ManyToManyField(Category, blank=True)
     authors = models.ManyToManyField(Author, blank=True)
 
+    class Meta:
+        ordering = ["book_id"]
+
     def clean(self):
         if self.available_copies > self.total_copies:
             raise ValidationError("Available copies cannot exceed total copies.")

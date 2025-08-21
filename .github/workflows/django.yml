@@ -35,7 +35,7 @@ jobs:
       DB_PASSWORD: root
       DB_HOST: 127.0.0.1
       DB_PORT: "3306"
-      DJANGO_SETTINGS_MODULE: lms_api.settings
+      DJANGO_SETTINGS_MODULE: lms.settings
       PYTHONUNBUFFERED: 1
 
     steps:
@@ -73,7 +73,7 @@ jobs:
           done
 
       - name: Create .env file
-        working-directory: django_api/lms_api
+        working-directory: phase3-django-api/lms
         run: |
           echo "SECRET_KEY=test-secret-key" > .env
           echo "DEBUG=False" >> .env
@@ -84,11 +84,11 @@ jobs:
           echo "DB_PORT=3306" >> .env
 
       - name: Run migrations
-        working-directory: django_api/lms_api
+        working-directory: phase3-django-api/lms
         run: python manage.py migrate --noinput
 
       - name: Run tests with coverage
-        working-directory: django_api/lms_api
+        working-directory: phase3-django-api/lms
         run: pytest --cov=library --cov-report=xml --cov-report=term -v
 
       - name: Upload coverage report
@@ -96,4 +96,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report-${{ matrix.python-version }}
-          path: django_api/lms_api/coverage.xml
+          path: phase3-django-api/lms/coverage.xml
